@@ -15,29 +15,59 @@
 #include <ctime> // for time() in srand( time(NULL) );
 #include <iomanip> // for setw()
 using namespace std;
-class Mars 
+class Gameboard
 {
 private:
     vector< vector<char> > map_; // convention to put trailing underscore
     int dimX_, dimY_; // to indicate private data
 
 public:
-    Mars(int dimX = 15, int dimY = 5);
+    Gameboard(int dimX = 15, int dimY = 5);
     void init(int dimX, int dimY);
     void display() const;
+
+    int getDimX();
+    int getDimY();
+
+    char getObject(int col, int row);
+
+    void setObject(int col, int row, char ch);
+
+    bool isEmpty(int col, int row, char ch);
+    bool isInsideMap(int col, int row, char ch);
 };
 
-Mars::Mars(int dimX, int dimY)
+Gameboard::Gameboard(int dimX, int dimY)
 {
     init(dimX, dimY);
 }
-void Mars::init(int dimX, int dimY)
+
+int Gameboard::getDimX()
+{
+    return dimX_;
+}
+
+int Gameboard::getDimY()
+{
+    return dimY_;
+}
+
+char Gameboard::getObject(int col, int row)
+{
+    return map_[dimY_ - row][col-1];
+}
+
+void Gameboard::setObject(int col, int row, char ch)
+{
+    map_[dimY_ - row][col-1] = ch;
+}
+void Gameboard::init(int dimX, int dimY)
 {
     dimX_ = dimX;
     dimY_ = dimY;
 
-    char objects[] = {' ', ' ', ' ', ' ', ' ', ' ', 'X', '#', '@', '$'};
-    int noOfObjects = 10; // number of objects in the objects array
+    char objects[] = {' ', ' ', ' ', ' ', ' ', ' ',' ', '^', 'v', '<', '>','p', 'h', 'r'};
+    int noOfObjects = 14; // number of objects in the objects array
 
     // create dynamic 2D array using vector
     map_.resize(dimY_); // create empty rows
@@ -56,7 +86,7 @@ void Mars::init(int dimX, int dimY)
     }
 }
 
-void Mars::display() const
+void Gameboard::display() const
 {
     // comment this out during testing
     // system("cls"); // OR system("clear"); for Linux / MacOS
@@ -117,10 +147,62 @@ void Mars::display() const
 
     
 }
+class Role
+{
+private:
+    int x_, y_;
+    char heading_; // either '^', '>', '<' or 'v'
+
+public:
+    Role();
+    void land(Gameboard &gameboard);
+    int getX() const;
+    int getY() const;
+    char getHeading() const;
+};
+
+Role::Role()
+{
+}
+
+void Role::land(Gameboard &gameboard)
+{
+    x_ = (gameboard.getDimX() / 2) + 1;
+    y_ = (gameboard.getDimY() / 2) + 1;
+    heading_ = 'A';
+
+    gameboard.setObject(x_, y_, heading_);
+}
+
+int Role::getX() const
+{
+    return x_;
+}
+
+int Role::getY() const
+{
+    return y_;
+}
+char Role::getHeading() const
+{
+    return heading_;
+}
+void test2_1()
+{
+    Gameboard gameboard;
+    Role location;
+    location.land(gameboard);
+    gameboard.display();
+
+    cout << "Status of the rover:" << endl
+         << "    Location: (" << location.getX() << ", " << location.getY() << ")"
+         << endl
+         << "    Heading: " << location.getHeading() << endl;
+}
 
 void test1_1()
 {
-    Mars mars;
+    Gameboard gameboard;
     int choice;
 
     cout << "Welcome to Alien VS Zombies!" << endl;
@@ -133,7 +215,7 @@ void test1_1()
     switch (choice) {
         case 1:
             cout << "Starting a new game..." << endl;
-            mars.display();
+            gameboard.display();
             // code to start a new game
             break;
         case 2:
@@ -161,5 +243,6 @@ int main()
     srand(1);              // use this for fixed map during testing
     // srand(time(NULL)); // try this for random map
 
-    test1_1();
+    //test1_1();
+    test2_1();
 }
