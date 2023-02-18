@@ -15,7 +15,7 @@
 #include <ctime> // for time() in srand( time(NULL) );
 #include <iomanip> // for setw()
 using namespace std;
-class Mars
+class Mars 
 {
 private:
     vector< vector<char> > map_; // convention to put trailing underscore
